@@ -40,22 +40,20 @@ void backgroundHandler() {
           'FlutterUploader Example',
           'Upload in Progress',
           NotificationDetails(
-            android: AndroidNotificationDetails(
-              'FlutterUploader.Example',
-              'FlutterUploader',
-              channelDescription:
-                  'Installed when you activate the Flutter Uploader Example',
-              progress: progress.progress ?? 0,
-              icon: 'ic_upload',
-              enableVibration: false,
-              importance: Importance.low,
-              showProgress: true,
-              onlyAlertOnce: true,
-              maxProgress: 100,
-              channelShowBadge: false,
-            ),
-            iOS: const IOSNotificationDetails(),
-          ),
+              android: AndroidNotificationDetails(
+                'FlutterUploader.Example',
+                'FlutterUploader',
+                channelDescription: 'Installed when you activate the Flutter Uploader Example',
+                progress: progress.progress ?? 0,
+                icon: 'ic_upload',
+                enableVibration: false,
+                importance: Importance.low,
+                showProgress: true,
+                onlyAlertOnce: true,
+                maxProgress: 100,
+                channelShowBadge: false,
+              ),
+              iOS: const DarwinNotificationDetails()),
         );
       });
     }
@@ -88,15 +86,12 @@ void backgroundHandler() {
           android: AndroidNotificationDetails(
             'FlutterUploader.Example',
             'FlutterUploader',
-            channelDescription:
-                'Installed when you activate the Flutter Uploader Example',
+            channelDescription: 'Installed when you activate the Flutter Uploader Example',
             icon: 'ic_upload',
             enableVibration: !successful,
-            importance: result.status == UploadTaskStatus.failed
-                ? Importance.high
-                : Importance.min,
+            importance: result.status == UploadTaskStatus.failed ? Importance.high : Importance.min,
           ),
-          iOS: const IOSNotificationDetails(
+          iOS: const DarwinNotificationDetails(
             presentAlert: true,
           ),
         ),
@@ -129,25 +124,19 @@ class _AppState extends State<App> {
     _uploader.setBackgroundHandler(backgroundHandler);
 
     var flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-    var initializationSettingsAndroid =
-        const AndroidInitializationSettings('ic_upload');
-    var initializationSettingsIOS = IOSInitializationSettings(
+    var initializationSettingsAndroid = const AndroidInitializationSettings('ic_upload');
+    var initializationSettingsIOS = DarwinInitializationSettings(
       requestSoundPermission: false,
       requestBadgePermission: false,
       requestAlertPermission: true,
-      onDidReceiveLocalNotification:
-          (int id, String? title, String? body, String? payload) async {},
     );
-    var initializationSettings = InitializationSettings(
-        android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
+    var initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
     flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
-      onSelectNotification: (payload) async {},
     );
 
-    SharedPreferences.getInstance()
-        .then((sp) => sp.getBool('allowCellular') ?? true)
-        .then((result) {
+    SharedPreferences.getInstance().then((sp) => sp.getBool('allowCellular') ?? true).then((result) {
       if (mounted) {
         setState(() {
           allowCellular = result;
@@ -167,9 +156,7 @@ class _AppState extends State<App> {
         appBar: AppBar(
           actions: [
             IconButton(
-              icon: Icon(allowCellular
-                  ? Icons.signal_cellular_connected_no_internet_4_bar
-                  : Icons.wifi_outlined),
+              icon: Icon(allowCellular ? Icons.signal_cellular_connected_no_internet_4_bar : Icons.wifi_outlined),
               onPressed: () async {
                 final sp = await SharedPreferences.getInstance();
                 await sp.setBool('allowCellular', !allowCellular);
